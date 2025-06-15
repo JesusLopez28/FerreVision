@@ -19,7 +19,7 @@ for i = 1:num_objetos
 
     % Calcular relación de aspecto
     relacion_aspecto = eje_mayor / eje_menor;
-    
+
     % Clasificación por tipo - criterios mejorados
     if circularidad > 0.8 && excentricidad < 0.5
         % Objetos muy circulares - Arandelas o tuercas
@@ -44,12 +44,12 @@ for i = 1:num_objetos
     if area < 1500 && relacion_aspecto > 1.5 && excentricidad > 0.7
         tipos{i} = 'Tornillo';
     end
-    
+
     % Tuercas: generalmente son hexagonales y tienen solidez alta
     if solidez > 0.9 && circularidad > 0.6 && circularidad < 0.85 && excentricidad < 0.7
         tipos{i} = 'Tuerca';
     end
-    
+
     % Arandelas grandes: alta circularidad y área grande
     if area > 3500 && circularidad > 0.75 && solidez < 0.95
         tipos{i} = 'Arandela';
@@ -80,52 +80,52 @@ end
 
 % Implementación manual del detector de esquinas de Harris
 function puntos = detectarEsquinasHarris(imagen)
-    % Convertir a double si es necesario
-    imagen = double(imagen);
-    
-    % Calcular gradientes usando el operador Sobel
-    Sx = [-1 0 1; -2 0 2; -1 0 1];
-    Sy = [-1 -2 -1; 0 0 0; 1 2 1];
-    
-    Ix = conv2(imagen, Sx, 'same');
-    Iy = conv2(imagen, Sy, 'same');
-    
-    % Calcular productos de gradientes
-    Ix2 = Ix .* Ix;
-    Iy2 = Iy .* Iy;
-    Ixy = Ix .* Iy;
-    
-    % Aplicar suavizado gaussiano
-    sigma = 1.5;
-    tamanio = ceil(6*sigma);
-    if mod(tamanio, 2) == 0
-        tamanio = tamanio + 1;
-    end
-    h = fspecial('gaussian', [tamanio tamanio], sigma);
-    
-    A = conv2(Ix2, h, 'same');
-    B = conv2(Iy2, h, 'same');
-    C = conv2(Ixy, h, 'same');
-    
-    % Calcular la respuesta de Harris
-    k = 0.04;
-    R = (A.*B - C.^2) - k*(A + B).^2;
-    
-    % Encontrar máximos locales
-    umbral = 0.01 * max(R(:));
-    R_bin = R > umbral;
-    
-    % Dilatar para encontrar máximos locales
-    se = strel('square', 3);
-    R_dilatada = imdilate(R, se);
-    R_maximos = (R == R_dilatada) & R_bin;
-    
-    % Obtener coordenadas de esquinas
-    [y, x] = find(R_maximos);
-    
-    % Crear estructura similar a la que devuelve detectHarrisFeatures
-    puntos = struct('Location', [x, y], 'Metric', zeros(length(x), 1));
-    for i = 1:length(x)
-        puntos.Metric(i) = R(y(i), x(i));
-    end
+% Convertir a double si es necesario
+imagen = double(imagen);
+
+% Calcular gradientes usando el operador Sobel
+Sx = [-1 0 1; -2 0 2; -1 0 1];
+Sy = [-1 -2 -1; 0 0 0; 1 2 1];
+
+Ix = conv2(imagen, Sx, 'same');
+Iy = conv2(imagen, Sy, 'same');
+
+% Calcular productos de gradientes
+Ix2 = Ix .* Ix;
+Iy2 = Iy .* Iy;
+Ixy = Ix .* Iy;
+
+% Aplicar suavizado gaussiano
+sigma = 1.5;
+tamanio = ceil(6*sigma);
+if mod(tamanio, 2) == 0
+    tamanio = tamanio + 1;
+end
+h = fspecial('gaussian', [tamanio tamanio], sigma);
+
+A = conv2(Ix2, h, 'same');
+B = conv2(Iy2, h, 'same');
+C = conv2(Ixy, h, 'same');
+
+% Calcular la respuesta de Harris
+k = 0.04;
+R = (A.*B - C.^2) - k*(A + B).^2;
+
+% Encontrar máximos locales
+umbral = 0.01 * max(R(:));
+R_bin = R > umbral;
+
+% Dilatar para encontrar máximos locales
+se = strel('square', 3);
+R_dilatada = imdilate(R, se);
+R_maximos = (R == R_dilatada) & R_bin;
+
+% Obtener coordenadas de esquinas
+[y, x] = find(R_maximos);
+
+% Crear estructura similar a la que devuelve detectHarrisFeatures
+puntos = struct('Location', [x, y], 'Metric', zeros(length(x), 1));
+for i = 1:length(x)
+    puntos.Metric(i) = R(y(i), x(i));
+end
 end
