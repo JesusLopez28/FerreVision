@@ -71,9 +71,61 @@ for i = 1:num_objetos
             bbox(2)+bbox(4) <= size(imagen_gris, 1)
 
         roi = imagen_gris(bbox(2):bbox(2)+bbox(4), bbox(1):bbox(1)+bbox(3));
-        esquinas{i} = detectHarrisFeatures(roi);
+        esquinas{i} = detectarEsquinasHarris(roi);
     else
         esquinas{i} = [];
     end
 end
+end
+
+% Implementación manual del detector de esquinas de Harris
+function puntos = detectarEsquinasHarris(imagen)
+    % Convertir a double si es necesario
+    imagen = double(imagen);
+    
+    % Calcular gradientes usando el operador Sobel
+    Sx = [-1 0 1; -2 0 2; -1 0 1];
+    Sy = [-1 -2 -1; 0 0 0; 1 2 1];
+    
+    Ix = conv2(imagen, Sx, 'same');
+    Iy = conv2(imagen, Sy, 'same');
+    
+    % Calcular productos de gradientes
+    Ix2 = Ix .* Ix;
+    Iy2 = Iy .* Iy;
+    Ixy = Ix .* Iy;
+    
+    % Aplicar suavizado gaussiano
+    sigma = 1.5;
+    tamanio = ceil(6*sigma);
+    if mod(tamanio, 2) == 0
+        tamanio = tamanio + 1;
+    end
+    h = fspecial('gaussian', [tamanio tamanio], sigma);
+    
+    A = conv2(Ix2, h, 'same');
+    B = conv2(Iy2, h, 'same');
+    C = conv2(Ixy, h, 'same');
+    
+    % Calcular la respuesta de Harris
+    k = 0.04;
+    R = (A.*B - C.^2) - k*(A + B).^2;
+    
+    % Encontrar máximos locales
+    umbral = 0.01 * max(R(:));
+    R_bin = R > umbral;
+    
+    % Dilatar para encontrar máximos locales
+    se = strel('square', 3);
+    R_dilatada = imdilate(R, se);
+    R_maximos = (R == R_dilatada) & R_bin;
+    
+    % Obtener coordenadas de esquinas
+    [y, x] = find(R_maximos);
+    
+    % Crear estructura similar a la que devuelve detectHarrisFeatures
+    puntos = struct('Location', [x, y], 'Metric', zeros(length(x), 1));
+    for i = 1:length(x)
+        puntos.Metric(i) = R(y(i), x(i));
+    end
 end
