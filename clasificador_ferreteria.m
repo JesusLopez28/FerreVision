@@ -17,35 +17,34 @@ ruta_completa = fullfile(pathname, filename);
 imagen_original = imread(ruta_completa);
 
 % Mostrar imagen original
-figure('Name', 'Clasificador de Elementos de Ferretería', 'NumberTitle', 'off');
-subplot(2, 3, 1);
+figure('Name', 'Imagen Original', 'NumberTitle', 'off');
 imshow(imagen_original, 'InitialMagnification', 100);
 title('Imagen Original');
 
 % Preprocesamiento
 imagen_preprocesada = preprocesamiento(imagen_original);
-subplot(2, 3, 2);
+figure('Name', 'Preprocesamiento', 'NumberTitle', 'off');
 imshow(imagen_preprocesada, 'InitialMagnification', 100);
 title('Preprocesamiento');
 
 % Segmentación y operaciones morfológicas
 [imagen_binaria, imagen_dilatada, imagen_erosionada] = segmentacion(imagen_preprocesada);
-subplot(2, 3, 3);
+figure('Name', 'Segmentación', 'NumberTitle', 'off');
 imshow(imagen_binaria, 'InitialMagnification', 100);
 title('Segmentación');
 
 % Detección y etiquetado de objetos
 [objetos_etiquetados, num_objetos, propiedades] = deteccion_objetos(imagen_binaria);
-subplot(2, 3, 4);
+figure('Name', 'Objetos Detectados', 'NumberTitle', 'off');
 imshow(label2rgb(objetos_etiquetados, 'jet', 'k', 'shuffle'), 'InitialMagnification', 100);
 title(['Objetos Detectados: ', num2str(num_objetos)]);
 
 % Extraer características y clasificar objetos
-[tipos, tamanios, esquinas] = clasificar_objetos(propiedades, imagen_preprocesada);
+[tipos, esquinas] = clasificar_objetos(propiedades, imagen_preprocesada);
 
 % Mostrar resultados
-imagen_resultado = mostrar_resultados(imagen_original, propiedades, tipos, tamanios);
-subplot(2, 3, 5:6);
+imagen_resultado = mostrar_resultados(imagen_original, propiedades, tipos);
+figure('Name', 'Clasificación Final', 'NumberTitle', 'off');
 imshow(imagen_resultado, 'InitialMagnification', 100);
 title('Clasificación Final');
 

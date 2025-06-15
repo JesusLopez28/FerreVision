@@ -1,8 +1,7 @@
 % filepath: e:\Escuela\CETI Colomos\7mo Semestre\PROCESAMIENTO DE IMÁGENES\3er Parcial\proyecto\clasificar_objetos.m
-function [tipos, tamanios, esquinas] = clasificar_objetos(propiedades, imagen_gris)
+function [tipos, esquinas] = clasificar_objetos(propiedades, imagen_gris)
 num_objetos = length(propiedades);
 tipos = cell(num_objetos, 1);
-tamanios = cell(num_objetos, 1);
 esquinas = cell(num_objetos, 1);
 
 for i = 1:num_objetos
@@ -20,10 +19,15 @@ for i = 1:num_objetos
     % Calcular relación de aspecto
     relacion_aspecto = eje_mayor / eje_menor;
 
+    % Tornillos pequeños: verificar primero para evitar clasificaciones incorrectas
+    if (area < 1800 && relacion_aspecto > 1.5 && excentricidad > 0.7) || ...
+       (area < 2000 && relacion_aspecto > 1.7) || ...
+       (excentricidad > 0.85 && relacion_aspecto > 1.6)
+        tipos{i} = 'Tornillo';
     % Clasificación por tipo - criterios mejorados
-    if circularidad > 0.8 && excentricidad < 0.5
+    elseif circularidad > 0.8 && excentricidad < 0.5
         % Objetos muy circulares - Arandelas o tuercas
-        if solidez < 0.8 || (area < 2500 && circularidad > 0.9)
+        if solidez < 0.7 || (area < 2000 && circularidad > 0.92)
             tipos{i} = 'Arandela';
         else
             tipos{i} = 'Tuerca';
@@ -31,37 +35,25 @@ for i = 1:num_objetos
     elseif relacion_aspecto > 2.5 && circularidad < 0.5
         % Tornillos: Muy alargados, baja circularidad
         tipos{i} = 'Tornillo';
-    elseif excentricidad > 0.85 && relacion_aspecto > 1.8
-        % Tornillos pequeños también tienen alta excentricidad
-        tipos{i} = 'Tornillo';
     else
         % Pernos: Menos alargados que tornillos, pero no tan circulares como arandelas
         tipos{i} = 'Perno';
     end
 
     % Refinamiento adicional para casos problemáticos
-    % Tornillos pequeños: tienen área pequeña pero son alargados
-    if area < 1500 && relacion_aspecto > 1.5 && excentricidad > 0.7
-        tipos{i} = 'Tornillo';
-    end
-
-    % Tuercas: generalmente son hexagonales y tienen solidez alta
-    if solidez > 0.9 && circularidad > 0.6 && circularidad < 0.85 && excentricidad < 0.7
+    % Tuercas: generalmente son hexagonales y tienen solidez alta pero menor circularidad que arandelas
+    if solidez > 0.85 && solidez < 0.95 && circularidad > 0.55 && circularidad < 0.8 && excentricidad < 0.6
         tipos{i} = 'Tuerca';
     end
 
-    % Arandelas grandes: alta circularidad y área grande
-    if area > 3500 && circularidad > 0.75 && solidez < 0.95
+    % Arandelas (más específico para identificar roldanas grandes)
+    if circularidad > 0.85 && solidez < 0.8
         tipos{i} = 'Arandela';
     end
-
-    % Clasificación por tamaño - umbrales ajustados
-    if area < 1500
-        tamanios{i} = 'Pequeño';
-    elseif area < 4000
-        tamanios{i} = 'Mediano';
-    else
-        tamanios{i} = 'Grande';
+    
+    % Arandelas grandes: alta circularidad y área grande
+    if area > 3000 && circularidad > 0.8 && solidez < 0.85
+        tipos{i} = 'Arandela';
     end
 
     % Detección de esquinas

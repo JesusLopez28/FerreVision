@@ -1,5 +1,5 @@
 % filepath: e:\Escuela\CETI Colomos\7mo Semestre\PROCESAMIENTO DE IMÁGENES\3er Parcial\proyecto\mostrar_resultados.m
-function imagen_resultado = mostrar_resultados(imagen_original, propiedades, tipos, tamanios)
+function imagen_resultado = mostrar_resultados(imagen_original, propiedades, tipos)
 % Crear copia de la imagen original
 imagen_resultado = imagen_original;
 
@@ -34,7 +34,7 @@ for i = 1:length(propiedades)
         'Color', color, 'LineWidth', 2);
 
     % Dibujar etiqueta
-    texto = [tipos{i}, ' ', tamanios{i}];
+    texto = tipos{i};
     imagen_resultado = insertText(imagen_resultado, [x, y-15], texto, ...
         'FontSize', 12, 'BoxColor', color, 'TextColor', 'white');
 end
