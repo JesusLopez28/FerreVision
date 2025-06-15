@@ -36,8 +36,8 @@ for i = 1:num_objetos
         % Tornillos: Muy alargados, baja circularidad
         tipos{i} = 'Tornillo';
     else
-        % Pernos: Menos alargados que tornillos, pero no tan circulares como arandelas
-        tipos{i} = 'Perno';
+        % Objetos que antes eran "Pernos" ahora se clasifican como tornillos
+        tipos{i} = 'Tornillo';
     end
 
     % Refinamiento adicional para casos problemáticos

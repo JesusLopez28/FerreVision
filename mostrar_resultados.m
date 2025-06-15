@@ -8,7 +8,6 @@ colores = containers.Map;
 colores('Tornillo') = [255, 0, 0];    % Rojo
 colores('Tuerca') = [0, 255, 0];      % Verde
 colores('Arandela') = [0, 0, 255];    % Azul
-colores('Perno') = [255, 255, 0];     % Amarillo
 
 % Dibujar rectángulos y etiquetas
 for i = 1:length(propiedades)

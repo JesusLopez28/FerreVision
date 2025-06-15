@@ -1,6 +1,6 @@
 # FerreVision
 
-FerreVision es un sistema de procesamiento de imágenes para la detección, segmentación y clasificación automática de elementos de ferretería (tornillos, tuercas, arandelas y pernos) en imágenes.
+FerreVision es un sistema de procesamiento de imágenes para la detección, segmentación y clasificación automática de elementos de ferretería (tornillos, tuercas y arandelas) en imágenes.
 
 ## Archivos principales
 
