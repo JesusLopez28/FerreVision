@@ -1,3 +1,4 @@
+% filepath: e:\Escuela\CETI Colomos\7mo Semestre\PROCESAMIENTO DE IMÁGENES\3er Parcial\proyecto\clasificar_objetos.m
 function [tipos, esquinas] = clasificar_objetos(propiedades, imagen_gris)
 num_objetos = length(propiedades);
 tipos = cell(num_objetos, 1);
